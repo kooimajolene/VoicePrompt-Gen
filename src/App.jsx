@@ -56,7 +56,6 @@ function App() {
   const transcriptPanelRef = useRef(null);
   const finalTranscriptRef = useRef('');
   const transcriptRef = useRef('');
-  const shouldOptimizeOnEndRef = useRef(false);
   const shouldKeepListeningRef = useRef(false);
   const restartTimerRef = useRef(null);
 
@@ -151,7 +150,6 @@ function App() {
 
       if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
         shouldKeepListeningRef.current = false;
-        shouldOptimizeOnEndRef.current = false;
         setStatus('idle');
         setError('麦克风权限被拒绝。请在浏览器地址栏打开麦克风权限后重试。');
         return;
@@ -174,13 +172,6 @@ function App() {
     };
 
     recognition.onend = async () => {
-      if (shouldOptimizeOnEndRef.current) {
-        shouldOptimizeOnEndRef.current = false;
-        shouldKeepListeningRef.current = false;
-        await handleOptimize(transcriptRef.current);
-        return;
-      }
-
       if (shouldKeepListeningRef.current) {
         restartTimerRef.current = window.setTimeout(() => {
           try {
@@ -199,7 +190,6 @@ function App() {
 
     return () => {
       shouldKeepListeningRef.current = false;
-      shouldOptimizeOnEndRef.current = false;
       if (restartTimerRef.current) {
         window.clearTimeout(restartTimerRef.current);
       }
@@ -254,7 +244,6 @@ function App() {
 
     transcriptRef.current = transcript;
     finalTranscriptRef.current = transcript ? `${transcript} ` : '';
-    shouldOptimizeOnEndRef.current = false;
     shouldKeepListeningRef.current = true;
     setPrompt('');
     setError('');
@@ -273,14 +262,12 @@ function App() {
     }
 
     shouldKeepListeningRef.current = false;
-    shouldOptimizeOnEndRef.current = true;
     recognitionRef.current.stop();
   };
 
   const clearAll = () => {
     if (recognitionRef.current && status === 'listening') {
       shouldKeepListeningRef.current = false;
-      shouldOptimizeOnEndRef.current = false;
       recognitionRef.current.stop();
     }
 
@@ -490,7 +477,7 @@ function App() {
                   </pre>
                 ) : (
                   <div className="flex min-h-[320px] items-center justify-center text-center text-cocoa/45">
-                    停止录音后会自动生成 Prompt，你也可以手动点击“一键优化”调用 DeepSeek 模型。
+                    停止录音后不会自动优化。请手动点击“一键优化”调用 DeepSeek 模型。
                   </div>
                 )}
               </div>
