@@ -418,7 +418,7 @@ function App() {
                 <p className="text-sm font-semibold uppercase tracking-[0.3em] text-cream-main/55">
                   Raw Input
                 </p>
-                <h2 className="subtitle-pop mt-2 text-[1.4rem] font-bold text-cream-main">
+                <h2 className="subtitle-pop mt-2 text-[1.4rem] font-bold text-cocoa">
                   实时语音转录 / 文本输入
                 </h2>
               </div>
